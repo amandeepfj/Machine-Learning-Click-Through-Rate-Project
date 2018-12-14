@@ -1,0 +1,25 @@
+---
+title: "ML_GroupProject"
+author: "PhilipFang"
+date: "December 12, 2018"
+output: html_document
+---
+
+## import data
+```{r}
+setwd("C:/ML")
+rm(list = ls(all = TRUE))
+
+library("data.table")
+
+Train <- fread("ProjectTrainingData.csv", header = TRUE,stringsAsFactors = FALSE)
+```
+
+## Sampling
+```{r}
+Ind <- ceiling(nrow(Train)*0.05)
+smallData <- Train[1:Ind,]
+fwrite(smallData,"smallTrain.csv")
+```
+
+

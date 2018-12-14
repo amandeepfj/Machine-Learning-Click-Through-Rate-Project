@@ -4,7 +4,7 @@ library(data.table)
 trainingData.full.data <- fread("ProjectTrainingData.csv")
 
 #sampleSize <- ceiling(nrow(trainingData)*0.05)
-sampleSize <- 100000
+sampleSize <- 1000000
 trainingData <- trainingData.full.data[sample(1:nrow(trainingData.full.data), sampleSize, replace=FALSE),]
 
 trainingData.summary <- summary(trainingData)

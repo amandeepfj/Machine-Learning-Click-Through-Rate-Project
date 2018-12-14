@@ -5,7 +5,7 @@ BigFm <- formula(BigFm)
 
 tempFM <- formula("click ~ C18 + C16 + C15 + device_conn_type + device_type + app_category + app_category + site_category + banner_pos + C1")
 
-source("ROCPlot.r")
+source("Machine-Learning-Click-Through-Rate-Project/ROCPlot.r")
 
 tc <- tree.control(nrow(trainingData.splits$train), minsize=2, mincut=1, mindev=0)
 #dt <- tree(BigFm, data=trainingData.splits$train, control=tc)
@@ -27,7 +27,7 @@ for(NNodes in seq(3, NNodes, stepTreeSizeby)) {
 plot(AUC.tree,type="l")
 BestN <- which.max(AUC.tree)
 abline(v=BestN, col = 2)
-text(BestN+16,(max(AUC.tree,na.rm=TRUE) + min(AUC.tree,na.rm=TRUE))/2,
+text(BestN+16,(max(AUC.tree,na.rm=TRUE) + min(AUC.tree, na.rm = TRUE))/2,
      paste("n=",BestN),srt=0.2,pos=3, col = 2)
 max(AUC.tree,na.rm=TRUE)
 AUC.tree[BestN]
@@ -41,7 +41,7 @@ AUC.dt <- ROCPlot(Pvec = pHatdt, Cvec = trainingData.splits$validate[, click])$A
 
 #mtry defines bagging process, if it all variables then its bagging - Bagging
 library(randomForest)
-bagging <- randomForest(tempFM, data = trainingData.splits$train, mtry=10,ntree=500)
+bagging <- randomForest(tempFM, data = trainingData.splits$train, mtry = 10, ntree = 500)
 
 pHatbagging <- predict(bagging,newdata = trainingData.splits$validate, type = "prob")
 pHatbagging <- pHatbagging[, 2]
@@ -49,7 +49,7 @@ AUC.bagging <- ROCPlot(Pvec = pHatbagging, Cvec = trainingData.splits$validate[,
 
 
 # Random Forest ----
-rf <- randomForest(tempFM, data = trainingData.splits$train, ntree=500)
+rf <- randomForest(tempFM, data = trainingData.splits$train, ntree = 500)
 
 pHatrf <- predict(rf,newdata = trainingData.splits$validate, type = "prob")
 pHatrf <- pHatrf[, 2]

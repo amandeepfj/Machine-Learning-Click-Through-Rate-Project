@@ -55,3 +55,4 @@ pHatrf <- predict(rf,newdata = trainingData.splits$validate, type = "prob")
 pHatrf <- pHatrf[, 2]
 AUC.rf <- ROCPlot(Pvec = pHatrf, Cvec = trainingData.splits$validate[, click])$AUC
 
+paste(AUC.dt, AUC.bagging, AUC.rf)

@@ -8,7 +8,7 @@ source("ROCPlot.r")
 tc <- tree.control(nrow(trainingData.splits$train), minsize=2, mincut=1, mindev=0)
 #dt <- tree(BigFm, data=trainingData.splits$train, control=tc)
 dt <- tree(click ~ C18 + C16 + C15 + device_conn_type + device_type + app_category + app_category + site_category + banner_pos + C1, 
-           data=trainingData.splits$train, control=tc)
+           data = trainingData.splits$train, control = tc)
 
 NNodes <- summary(dt)$size
 NNodes
@@ -35,3 +35,5 @@ summary(dtBest)
 pHatdt <- predict(type = "vector", object = dtBest, newdata = trainingData.splits$validate)
 pHatdt <- pHatdt[, 2]
 ROCPlot(Pvec = pHatdt, Cvec = trainingData.splits$validate[, click])
+
+

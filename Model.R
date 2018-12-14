@@ -3,7 +3,7 @@ vars <- colnames(trainingData)
 BigFm <- paste(vars[2],"~",paste(vars[4:24],collapse=" + "),sep=" ")
 BigFm <- formula(BigFm)
 
-tempFM <- formula("click ~ C18 + C16 + C15 + device_conn_type + device_type + app_category + app_category + site_category + banner_pos + C1")
+tempFM <- formula("click ~ C18 + C16 + C15 + device_conn_type + device_type + app_category + site_category + banner_pos + C1")
 
 source("Machine-Learning-Click-Through-Rate-Project/ROCPlot.r")
 
@@ -53,6 +53,27 @@ rf <- randomForest(tempFM, data = trainingData.splits$train, ntree = 500)
 
 pHatrf <- predict(rf,newdata = trainingData.splits$validate, type = "prob")
 pHatrf <- pHatrf[, 2]
+pHatrf <- unname(pHatrf)
 AUC.rf <- ROCPlot(Pvec = pHatrf, Cvec = trainingData.splits$validate[, click])$AUC
 
 paste(AUC.dt, AUC.bagging, AUC.rf)
+
+# Logistic regression ------------------
+SmallFm <- click ~ 1
+OutSmall <- glm(SmallFm, family = binomial(link = "logit"), data = trainingData.unfactored.splits$train)
+
+OutBig <- glm(BigFm,data=trainingData.unfactored.splits$train)
+
+summary(OutSmall)
+summary(OutBig)
+
+sc <- list(lower=SmallFm,upper=BigFm)
+lr <- step(OutSmall,scope=sc,direction="both")
+summary(lr)
+AIC(lr)
+
+pHatlr <- predict.glm(object = lr, type = "response", newdata = trainingData.unfactored.splits$validate)
+
+AUC.lr <- ROCPlot(Pvec = pHatlr, Cvec = trainingData.splits$validate[, click])$AUC
+
+

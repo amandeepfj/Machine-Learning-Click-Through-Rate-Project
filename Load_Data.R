@@ -4,11 +4,13 @@ library(data.table)
 trainingData.full.data <- fread("ProjectTrainingData.csv")
 
 #sampleSize <- ceiling(nrow(trainingData)*0.05)
-sampleSize <- 1000000
+set.seed(4)
+sampleSize <- 10000
 trainingData <- trainingData.full.data[sample(1:nrow(trainingData.full.data), sampleSize, replace=FALSE),]
 
 trainingData.summary <- summary(trainingData)
 
+trainingData.unfactored <- data.table(trainingData)
 
 colnames(trainingData)
 categorical_variables <- setdiff(colnames(trainingData), c("id"))
@@ -37,4 +39,5 @@ g <- sample(cut(
 ))
 
 trainingData.splits <-  split(trainingData, g)
+trainingData.unfactored.splits <- split(trainingData.unfactored, g)
 

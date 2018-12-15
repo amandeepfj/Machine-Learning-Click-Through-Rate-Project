@@ -1,3 +1,6 @@
+# @author: Amandeep
+# "We are drowning in information, while starving for wisdom - E. O. Wilson"
+
 setwd("C:/ML/")
 
 rm(list = setdiff(ls(), "trainingData.full.data"))
@@ -8,7 +11,7 @@ if(!exists("trainingData.full.data")){
 }
 
 set.seed(4)
-sampleSize <- 100000
+sampleSize <- 1000
 trainingData <- trainingData.full.data[sample(1:nrow(trainingData.full.data), sampleSize, replace=FALSE),]
 trainingData.summary <- summary(trainingData)
 

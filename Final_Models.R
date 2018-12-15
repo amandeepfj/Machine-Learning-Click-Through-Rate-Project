@@ -1,3 +1,7 @@
+# @author: Amandeep
+# "We are drowning in information, while starving for wisdom - E. O. Wilson"
+
+
 source("Machine-Learning-Click-Through-Rate-Project/Load_Data.R")
 source("Machine-Learning-Click-Through-Rate-Project/ROCPlot.r")
 
@@ -49,14 +53,15 @@ AUC.dt <- auc.perf@y.values
 
 #mtry defines bagging process, if it all variables then its bagging - Bagging
 library(randomForest)
-bagging <- randomForest(BigFm, data = trainingData.splits$train, mtry = (length(vars) - 4), ntree = 500)
+bagging <- randomForest(BigFm, data = trainingData.splits$train, 
+                        mtry = (length(colnames(trainingData.splits$train)) - 4), ntree = 500)
 
 pHatbagging <- predict(bagging,newdata = trainingData.splits$validate, type = "prob")
 pHatbagging <- pHatbagging[, 2]
 AUC.bagging <- ROCPlot(Pvec = pHatbagging, Cvec = trainingData.splits$validate[, click])$AUC
 
 # Random Forest ----
-rf <- randomForest(BigFm, data = trainingData.splits$train, ntree = 500)
+rf <- randomForest(BigFm, data = trainingData.splits$train, ntree = 500, mtry = 5)
 
 pHatrf <- predict(rf,newdata = trainingData.splits$validate, type = "prob")
 pHatrf <- pHatrf[, 2]

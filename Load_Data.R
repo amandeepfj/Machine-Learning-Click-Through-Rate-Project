@@ -1,19 +1,24 @@
 setwd("C:/ML/")
+
+rm(list = setdiff(ls(), "trainingData.full.data"))
+
 library(data.table)
+if(!exists("trainingData.full.data")){
+  trainingData.full.data <- fread("ProjectTrainingData.csv")
+}
 
-trainingData.full.data <- fread("ProjectTrainingData.csv")
-
-#sampleSize <- ceiling(nrow(trainingData)*0.05)
 set.seed(4)
-sampleSize <- 10000
+sampleSize <- 100000
 trainingData <- trainingData.full.data[sample(1:nrow(trainingData.full.data), sampleSize, replace=FALSE),]
-
 trainingData.summary <- summary(trainingData)
 
-trainingData.unfactored <- data.table(trainingData)
+trainingData[, click := factor(trainingData[, click])]
+#keeping only hour
+trainingData[, week_day := wday(ymd_h(as.character(hour)))]
+trainingData[, hour := (hour %% 100)]
 
 colnames(trainingData)
-categorical_variables <- setdiff(colnames(trainingData), c("id"))
+categorical_variables <- setdiff(colnames(trainingData), c("id", "click", "hour", "week_day"))
 trainingData.distribution <- list()
 bPlotBar = TRUE
 for(column in categorical_variables){
@@ -21,14 +26,8 @@ for(column in categorical_variables){
   if(bPlotBar  == TRUE){
     barplot(trainingData.distribution[[column]], xlab = column, ylab = "Frequency")
   }
-  #tree supports factors max 32 factor levels
-  if(nlevels(factor(trainingData[, get(column)])) <= 32){
-    trainingData[, eval(column) := factor(trainingData[, get(column)])]
-  } else{
-    print(paste("Not factoring", column))
-  }
+  trainingData[, eval(column) := as.numeric(factor(trainingData[, get(column)]))]
 }
-
 
 spec <- c(train = .7, validate = .3)
 
@@ -39,5 +38,4 @@ g <- sample(cut(
 ))
 
 trainingData.splits <-  split(trainingData, g)
-trainingData.unfactored.splits <- split(trainingData.unfactored, g)
 

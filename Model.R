@@ -6,10 +6,10 @@ BigFm <- formula(BigFm)
 tempFM <- formula("click ~ C18 + C16 + C15 + device_conn_type + device_type + app_category + site_category + banner_pos + C1")
 
 source("Machine-Learning-Click-Through-Rate-Project/ROCPlot.r")
-
+trainingData.unfactored.splits$train[, click := unname(click)]
 tc <- tree.control(nrow(trainingData.splits$train), minsize=2, mincut=1, mindev=0)
-#dt <- tree(BigFm, data=trainingData.splits$train, control=tc)
-dt <- tree(tempFM, data = trainingData.splits$train, control = tc)
+dt <- tree(BigFm, data = trainingData.splits$train, control = tc, method = "deviance")
+#dt <- tree(tempFM, data = trainingData.splits$train, control = tc)
 
 NNodes <- summary(dt)$size
 NNodes
@@ -41,7 +41,7 @@ AUC.dt <- ROCPlot(Pvec = pHatdt, Cvec = trainingData.splits$validate[, click])$A
 
 #mtry defines bagging process, if it all variables then its bagging - Bagging
 library(randomForest)
-bagging <- randomForest(tempFM, data = trainingData.splits$train, mtry = 10, ntree = 500)
+bagging <- randomForest(BigFm, data = trainingData.splits$train, mtry = 10, ntree = 5000)
 
 pHatbagging <- predict(bagging,newdata = trainingData.splits$validate, type = "prob")
 pHatbagging <- pHatbagging[, 2]
@@ -59,10 +59,11 @@ AUC.rf <- ROCPlot(Pvec = pHatrf, Cvec = trainingData.splits$validate[, click])$A
 paste(AUC.dt, AUC.bagging, AUC.rf)
 
 # Logistic regression ------------------
-SmallFm <- click ~ 1
-OutSmall <- glm(SmallFm, family = binomial(link = "logit"), data = trainingData.unfactored.splits$train)
+library(glmnet)
+OutSmall <- glmnet(x = trainingData.unfactored.splits$train[, -2, with = FALSE], y = trainingData.unfactored.splits$train[, click], 
+                   family = binomial(link = "logit"), alpha = 1)
 
-OutBig <- glm(BigFm,data=trainingData.unfactored.splits$train)
+OutBig <- glmnet(BigFm,data=trainingData.unfactored.splits$train)
 
 summary(OutSmall)
 summary(OutBig)

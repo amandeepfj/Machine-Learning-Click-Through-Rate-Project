@@ -6,6 +6,7 @@ setwd("C:/ML/")
 rm(list = setdiff(ls(), "trainingData.full.data"))
 
 library(data.table)
+library(lubridate)
 if(!exists("trainingData.full.data")){
   trainingData.full.data <- fread("ProjectTrainingData.csv")
 }

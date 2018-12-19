@@ -1,0 +1,10 @@
+# @author: Alex Su, Amandeep
+# "We are drowning in information, while starving for wisdom - E. O. Wilson"
+
+Logloss <- function(pred, validy){
+  if(is.factor(validy)){
+    validy <- as.numeric(levels(validy))[validy]
+  }
+  pred <- (as.vector(pred))
+  return( - mean(validy*log(pred)+(1-validy)*log(1-pred), na.rm = TRUE))
+}

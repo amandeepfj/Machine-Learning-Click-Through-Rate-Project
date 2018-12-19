@@ -20,38 +20,12 @@ dt <- rpart(BigFm, data = trainingData.splits$train, control=rpc)
 
 plotcp(dt)
 
-cps <- dt$cp
-AUC.tree <- rep(NA, length(cps[, 1]))
-auc.cnt <- 1
-for(tempCp in cps[, 1]){
-  out.temp <- prune(dt, cp = tempCp)
-  pHat <- predict(out.temp, type = "prob", newdata = trainingData.splits$validate)
-  pred <- prediction(pHat[, 2], trainingData.splits$validate[, click])
-  auc.perf <- performance(pred, measure = "auc")
-  AUC.tree[auc.cnt] <- unlist(auc.perf@y.values)
-  auc.cnt <- auc.cnt + 1
-}
-
-plot(AUC.tree,type="l")
-BestN <- which.max(AUC.tree)
-abline(v=BestN, col = 2)
-text(BestN+16,(max(AUC.tree,na.rm=TRUE) + min(AUC.tree, na.rm = TRUE))/2,
-     paste("n=",BestN),srt=0.2,pos=3, col = 2)
-max(AUC.tree,na.rm=TRUE)
-AUC.tree[BestN]
-bestCP <- cps[BestN, 1]
-
-out1 <- prune(dt, cp = bestCP)
-pHat <- predict(out1, type = "prob", newdata = trainingData.splits$validate)
-pred <- prediction(pHat[, 2], trainingData.splits$validate[, click])
-roc.perf <- performance(pred, "tpr", "fpr")
-auc.perf <- performance(pred, measure = "auc")
-
-plot(roc.perf,lwd=2,col="blue",
-     main=paste("AUC :", auc.perf@y.values))
-abline(0, 1, lty = 2)
-
-AUC.dt <- auc.perf@y.values
+bestcp <- dt$cptable[which.min(dt$cptable[,"xerror"]),"CP"]
+out1 <- prune(dt, cp = bestcp)
+pHatdt <- predict(out1, newdata = trainingData.splits$validate, type = "prob")
+pHatdt <- pHatdt[, 2]
+AUC.dt <- ROCPlot(Pvec = pHatdt, Cvec = trainingData.splits$validate[, click])$AUC
+Logloss(pHatdt, trainingData.splits$validate[, click])
 
 #mtry defines bagging process, if it all variables then its bagging - Bagging
 library(randomForest)

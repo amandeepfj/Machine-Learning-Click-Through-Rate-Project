@@ -6,5 +6,7 @@ Logloss <- function(pred, validy){
     validy <- as.numeric(levels(validy))[validy]
   }
   pred <- (as.vector(pred))
-  return( - mean(validy*log(pred)+(1-validy)*log(1-pred), na.rm = TRUE))
+  eps <- 1e-15
+  pred <- pmax(pmin(pred, 1 - eps), eps)
+  return(LogLoss(pred, validy))
 }

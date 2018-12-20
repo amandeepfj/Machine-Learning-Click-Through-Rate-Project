@@ -1,12 +1,13 @@
-# Author Alex Su
+# @Authors Alex Su, Aman
+# "We are drowning in information, while starving for wisdom - E. O. Wilson"
 
 TrainData <- trainingData.splits$train
 ValData <- trainingData.splits$validate
 
 # Exclude "ID" and "Click"
-TrainData <- TrainData[,-c(1:2)]
+TrainData <- TrainData[,-c("click", "id")]
 
-ValData <- ValData[,-c(1:2)]
+ValData <- ValData[,-c("click", "id")]
 
 
 # Create factor list for each feature

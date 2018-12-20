@@ -21,6 +21,9 @@ trainingData[, click := factor(trainingData[, click])]
 trainingData[, week_day := wday(ymd_h(as.character(hour)))]
 trainingData[, hour := (hour %% 100)]
 
+hourly_visits_cnt <- trainingData[, .(avg_visits_hr = .N), by = hour]
+trainingData <- merge(hourly_visits_cnt, trainingData, by = "hour")
+
 colnames(trainingData)
 categorical_variables <- setdiff(colnames(trainingData), c("id", "click", "hour", "week_day"))
 trainingData.distribution <- list()

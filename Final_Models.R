@@ -8,7 +8,7 @@ source("Machine-Learning-Click-Through-Rate-Project/ROCPlot.r")
 source("Machine-Learning-Click-Through-Rate-Project/Log Loss Function.R")
 
 vars <- colnames(trainingData)
-BigFm <- paste(vars[2],"~",paste(vars[4:24],collapse=" + "),sep=" ")
+BigFm <- paste("click","~",paste(setdiff(vars, "click"),collapse=" + "),sep=" ")
 BigFm <- formula(BigFm)
 
 

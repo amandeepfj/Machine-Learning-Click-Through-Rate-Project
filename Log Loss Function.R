@@ -8,5 +8,5 @@ Logloss <- function(pred, validy){
   pred <- (as.vector(pred))
   eps <- 1e-15
   pred <- pmax(pmin(pred, 1 - eps), eps)
-  return(LogLoss(pred, validy))
+  return( - mean(validy*log(pred)+(1-validy)*log(1-pred), na.rm = TRUE))
 }

@@ -8,20 +8,22 @@ library(lubridate)
 if(!exists("trainingData.full.data")){
   trainingData.full.data <- fread(paste0(data_files_location, "ProjectTrainingData.csv"))
 }
-if(!exists("testData.full.data")){
-  testData.full.data <- fread(paste0(data_files_location, "ProjectTestData.csv"))
-}
 
 set.seed(4)
-sampleSize <- 1000
-trainingData <- trainingData.full.data[sample(1:nrow(trainingData.full.data), sampleSize, replace=FALSE),]
-trainingData.summary <- summary(trainingData)
+#sampleSize <- nrow(trainingData.full.data)
+sampleSize <- 100000
+if(sampleSize != nrow(trainingData.full.data)){
+  trainingData <- trainingData.full.data[sample(1:nrow(trainingData.full.data), sampleSize, replace=FALSE),]
+  trainingData.summary <- summary(trainingData)
+} else{
+  trainingData <- trainingData.full.data
+}
 
 setwd(code_files_location)
 source("transform_time_variables.R")
 source("Shrink_Categories_and_Factor.R")
 
-spec <- c(train = .7, validate = .3)
+spec <- c(train = .8, validate = .2)
 
 g <- sample(cut(
   seq(nrow(trainingData)), 

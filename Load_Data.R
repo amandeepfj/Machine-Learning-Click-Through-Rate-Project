@@ -1,40 +1,22 @@
 # @author: Amandeep
 # "We are drowning in information, while starving for wisdom - E. O. Wilson"
 
-setwd("C:/ML/")
-
 rm(list = setdiff(ls(), "trainingData.full.data"))
 
 library(data.table)
 library(lubridate)
 if(!exists("trainingData.full.data")){
-  trainingData.full.data <- fread("ProjectTrainingData.csv")
+  trainingData.full.data <- fread(paste0(data_files_location, "ProjectTrainingData.csv"))
 }
 
 set.seed(4)
-sampleSize <- 10000
+sampleSize <- 100000
 trainingData <- trainingData.full.data[sample(1:nrow(trainingData.full.data), sampleSize, replace=FALSE),]
 trainingData.summary <- summary(trainingData)
 
-trainingData[, click := factor(trainingData[, click])]
-#keeping only hour
-trainingData[, week_day := wday(ymd_h(as.character(hour)))]
-trainingData[, hour := (hour %% 100)]
-
-hourly_visits_cnt_day <- trainingData[, .(avg_visits_hr = .N), by = .(hour, week_day)]
-trainingData <- merge(hourly_visits_cnt_day, trainingData, by = c("hour", "week_day"))
-
-colnames(trainingData)
-categorical_variables <- setdiff(colnames(trainingData), c("id", "click", "hour", "week_day"))
-trainingData.distribution <- list()
-bPlotBar = TRUE
-for(column in categorical_variables){
-  trainingData.distribution[[column]] <- table(trainingData[, get(column)])
-  if(bPlotBar  == TRUE){
-    barplot(trainingData.distribution[[column]], xlab = column, ylab = "Frequency")
-  }
-  trainingData[, eval(column) := as.numeric(factor(trainingData[, get(column)]))]
-}
+setwd(code_files_location)
+source("transform_time_variables.R")
+source("Shrink_Categories_and_Factor.R")
 
 spec <- c(train = .7, validate = .3)
 

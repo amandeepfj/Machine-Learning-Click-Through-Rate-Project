@@ -6,7 +6,7 @@ source("ROCPlot.r")
 source("Log Loss Function.R")
 
 vars <- colnames(trainingData)
-cols_not_in_fm_right_side <- c("id", "click", "device_id", "C20", "device_ip", "app_id")
+cols_not_in_fm_right_side <- c("id", "click", "device_id", "device_ip")
 BigFm <- paste("click","~",paste(setdiff(vars, cols_not_in_fm_right_side),collapse=" + "),sep=" ")
 BigFm <- formula(BigFm)
 print(BigFm)

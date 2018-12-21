@@ -1,8 +1,6 @@
 # @author: Amandeep
 # "We are drowning in information, while starving for wisdom - E. O. Wilson"
 
-rm(list = setdiff(ls(), c("trainingData.full.data", "trainingData", "testData.full.data", "code_files_location", "data_files_location")))
-
 if(!exists("testData.full.data")){
   testData.full.data <- fread(paste0(data_files_location, "ProjectTestData.csv"))
 }

@@ -18,7 +18,7 @@ shrink_categories_and_factor <- function(trainingData, column){
   #trainingData[, get(column)]
 }
 
-not__to_factor <- c("id", "click")
+not__to_factor <- c("id", "click","site_id","app_id","device_id","device_ip")
 
 categorical_variables <- setdiff(colnames(trainingData), not__to_factor)
 for(column in categorical_variables){

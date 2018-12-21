@@ -1,16 +1,19 @@
 # @author: Amandeep
 # "We are drowning in information, while starving for wisdom - E. O. Wilson"
 
-rm(list = setdiff(ls(), c("trainingData.full.data", "code_files_location", "data_files_location")))
+rm(list = setdiff(ls(), c("trainingData.full.data", "testData.full.data", "code_files_location", "data_files_location")))
 
 library(data.table)
 library(lubridate)
 if(!exists("trainingData.full.data")){
   trainingData.full.data <- fread(paste0(data_files_location, "ProjectTrainingData.csv"))
 }
+if(!exists("testData.full.data")){
+  testData.full.data <- fread(paste0(data_files_location, "ProjectTestData.csv"))
+}
 
 set.seed(4)
-sampleSize <- 10000
+sampleSize <- 1000
 trainingData <- trainingData.full.data[sample(1:nrow(trainingData.full.data), sampleSize, replace=FALSE),]
 trainingData.summary <- summary(trainingData)
 

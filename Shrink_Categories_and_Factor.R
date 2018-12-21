@@ -1,7 +1,7 @@
 # @author: Amandeep, Philip Fang
 # "We are drowning in information, while starving for wisdom - E. O. Wilson"
 
-max.category.cnt <- 50
+max.category.cnt <- 51
 
 # This function will merge the categories with lower frequency into one category called "others"
 # This function also takes care about the missing values and puts those in "missing" data category
@@ -18,9 +18,9 @@ shrink_categories_and_factor <- function(trainingData, column){
   #trainingData[, get(column)]
 }
 
-not_categorical_variables <- c("id")
+not__to_factor <- c("id", "click")
 
-categorical_variables <- setdiff(colnames(trainingData), not_categorical_variables)
+categorical_variables <- setdiff(colnames(trainingData), not__to_factor)
 for(column in categorical_variables){
   shrink_categories_and_factor(trainingData, column)
 }

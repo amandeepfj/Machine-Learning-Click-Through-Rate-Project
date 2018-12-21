@@ -9,7 +9,7 @@ vars <- colnames(trainingData)
 cols_not_in_fm_right_side <- c("id", "click")
 BigFm <- paste("click","~",paste(setdiff(vars, cols_not_in_fm_right_side),collapse=" + "),sep=" ")
 BigFm <- formula(BigFm)
-
+print(BigFm)
 sapply(trainingData,class)
 
 # Decision Trees ----------------
@@ -25,8 +25,9 @@ out1 <- prune(dt, cp = bestcp)
 pHatdt <- predict(out1, newdata = trainingData.splits$validate, type = "prob")
 pHatdt <- pHatdt[, 2]
 AUC.dt <- ROCPlot(Pvec = pHatdt, Cvec = trainingData.splits$validate[, click])$AUC
-Logloss(pHatdt, trainingData.splits$validate[, click])
+logloss.dt <- Logloss(pHatdt, trainingData.splits$validate[, click])
 
+print(paste("Log Loss of DT =", logloss.dt))
 
 # mtry defines bagging process, if it all variables then its bagging - Bagging -------------
 library(randomForest)
@@ -38,6 +39,8 @@ pHatbagging <- pHatbagging[, 2]
 AUC.bagging <- ROCPlot(Pvec = pHatbagging, Cvec = trainingData.splits$validate[, click])$AUC
 Logloss(pHatbagging, trainingData.splits$validate[, click])
 
+print(paste("Log Loss of DT =", logloss.dt))
+
 # Random Forest ----
 rf <- randomForest(BigFm, data = trainingData.splits$train, ntree = 500, mtry = 5)
 
@@ -46,7 +49,17 @@ pHatrf <- pHatrf[, 2]
 AUC.rf <- ROCPlot(Pvec = pHatrf, Cvec = trainingData.splits$validate[, click])$AUC
 Logloss(pHatrf, trainingData.splits$validate[, click])
 
+# GLM ----------------
 
+#THIS IS INCOMPLETE
+lr <- glm(click ~ hour + C1 + banner_pos, 
+          data = trainingData.splits$train, 
+          family = binomial(link="logit"))
+
+pHatlr <- predict.glm(object = lr, newdata = trainingData.splits$validate)
+
+AUC.lr <- ROCPlot(Pvec = pHatlr, Cvec = trainingData.splits$validate[, click])$AUC
+Logloss(pHatlr, trainingData.splits$validate[, click])
 
 paste(AUC.dt, AUC.bagging, AUC.rf)
 

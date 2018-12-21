@@ -1,7 +1,7 @@
 # @author: Amandeep
 # "We are drowning in information, while starving for wisdom - E. O. Wilson"
 
-rm(list = setdiff(ls(), "trainingData.full.data"))
+rm(list = setdiff(ls(), c("trainingData.full.data", "code_files_location", "data_files_location")))
 
 library(data.table)
 library(lubridate)
@@ -10,7 +10,7 @@ if(!exists("trainingData.full.data")){
 }
 
 set.seed(4)
-sampleSize <- 100000
+sampleSize <- 10000
 trainingData <- trainingData.full.data[sample(1:nrow(trainingData.full.data), sampleSize, replace=FALSE),]
 trainingData.summary <- summary(trainingData)
 

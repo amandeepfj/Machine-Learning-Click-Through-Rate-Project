@@ -12,6 +12,22 @@ BigFm <- formula(BigFm)
 
 sapply(trainingData,class)
 
+# Decision Trees ----------------
+if(!require("rpart")) { install.packages("rpart"); require("rpart") }
+
+rpc <- rpart.control(minsplit = 1, minbucket = 1, cp = 0, usesurrogate = 0, xval = 10)
+dt <- rpart(BigFm, data = trainingData.splits$train, control=rpc, method = "class")
+
+plotcp(dt)
+
+bestcp <- dt$cptable[which.min(dt$cptable[,"xerror"]),"CP"]
+out1 <- prune(dt, cp = bestcp)
+pHatdt <- predict(out1, newdata = trainingData.splits$validate, type = "prob")
+pHatdt <- pHatdt[, 2]
+AUC.dt <- ROCPlot(Pvec = pHatdt, Cvec = trainingData.splits$validate[, click])$AUC
+Logloss(pHatdt, trainingData.splits$validate[, click])
+
+
 # mtry defines bagging process, if it all variables then its bagging - Bagging -------------
 library(randomForest)
 bagging <- randomForest(BigFm, data = trainingData.splits$train, 
@@ -30,21 +46,6 @@ pHatrf <- pHatrf[, 2]
 AUC.rf <- ROCPlot(Pvec = pHatrf, Cvec = trainingData.splits$validate[, click])$AUC
 Logloss(pHatrf, trainingData.splits$validate[, click])
 
-
-# Decision Trees ----------------
-if(!require("rpart")) { install.packages("rpart"); require("rpart") }
-
-rpc <- rpart.control(minsplit = 1, minbucket = 1, cp = 0, usesurrogate = 0, xval = 10)
-dt <- rpart(BigFm, data = trainingData.splits$train, control=rpc, method = "class")
-
-plotcp(dt)
-
-bestcp <- dt$cptable[which.min(dt$cptable[,"xerror"]),"CP"]
-out1 <- prune(dt, cp = bestcp)
-pHatdt <- predict(out1, newdata = trainingData.splits$validate, type = "prob")
-pHatdt <- pHatdt[, 2]
-AUC.dt <- ROCPlot(Pvec = pHatdt, Cvec = trainingData.splits$validate[, click])$AUC
-Logloss(pHatdt, trainingData.splits$validate[, click])
 
 
 paste(AUC.dt, AUC.bagging, AUC.rf)

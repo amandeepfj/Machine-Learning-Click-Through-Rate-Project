@@ -31,13 +31,27 @@ for(column in categorical_variables){
 # exclude 'id'
 TestData <- TestData[,-1]
 
+# seperate Valdata from trainingData
+spec <- c(train = .7, validate = .3)
+
+g <- sample(cut(
+  seq(nrow(trainingData)), 
+  nrow(trainingData)*cumsum(c(0,spec)),
+  labels = names(spec)
+))
+
+trainingData.splits <-  split(trainingData, g)
+
 # assign TrainData and ValData
 TrainData <- trainingData.splits$train
 ValData <- trainingData.splits$validate
 
 # Exclude "ID" and "Click"
-TrainData <- TrainData[,-c(1:2)]
-ValData <- ValData[,-c(1:2)]
+TrainData <- TrainData[,-1]
+ValData <- ValData[,-1]
+
+# TrainData <- TrainData[,-c(1:2)]
+# ValData <- ValData[,-c(1:2)]
 
 
 # Create factor list for each feature
@@ -46,17 +60,23 @@ for(i in 1:ncol(TrainData)){
   factor_list[[i]]=unique(TrainData[[i]])
 }
 
-#Match levels and treat unmatched levels as 'Others'
+factor_list
+
+
+#Match levels and treat unmatched levels as NA
 for(i in 1:ncol(ValData)){
   print(i)
   index<-which(!as.character(ValData[[i]]) %in% as.character(factor_list[[i]]))
-  ValData[[i]][index]<-'Other'
+  ValData[[i]][index]<-NA
 }
+
+summary(ValData)
+
 
 for(i in 1:ncol(TestData)){
   print(i)
   index<-which(!as.character(TestData[[i]]) %in% as.character(factor_list[[i]]))
-  TestData[[i]][index]<-'Other'
+  TestData[[i]][index]<-NA
 }
 
 # not sure if we need it or not!
@@ -69,3 +89,4 @@ for(i in 1:length(TrainData)) {
     levels(ValData[[i]]) <- levels(TrainData[[i]])
   }
 }
+

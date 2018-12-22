@@ -6,13 +6,14 @@ source("ROCPlot.r")
 source("Log Loss Function.R")
 
 vars <- colnames(trainingData)
-cols_not_in_fm_right_side <- c("id", "click", "device_id", "device_ip")
+cols_not_in_fm_right_side <- c(not__to_factor)
 BigFm <- paste("click","~",paste(setdiff(vars, cols_not_in_fm_right_side),collapse=" + "),sep=" ")
 BigFm <- formula(BigFm)
 print(BigFm)
 sapply(trainingData,class)
 
-sapply(trainingData, table)
+#sapply(trainingData, table)
+gc()
 # Decision Trees ----------------
 if(!require("rpart")) { install.packages("rpart"); require("rpart") }
 
@@ -30,6 +31,7 @@ logloss.dt <- Logloss(pHatdt, trainingData.splits$validate[, click])
 
 print(paste("Log Loss of DT =", logloss.dt))
 
+gc()
 # mtry defines bagging process, if it all variables then its bagging - Bagging -------------
 library(randomForest)
 bagging <- randomForest(BigFm, data = trainingData.splits$train, 
@@ -50,6 +52,7 @@ pHatrf <- pHatrf[, 2]
 AUC.rf <- ROCPlot(Pvec = pHatrf, Cvec = trainingData.splits$validate[, click])$AUC
 Logloss(pHatrf, trainingData.splits$validate[, click])
 
+gc()
 # GLM ----------------
 
 #THIS IS INCOMPLETE

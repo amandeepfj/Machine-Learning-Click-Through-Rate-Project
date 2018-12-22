@@ -1,3 +1,39 @@
+File Structure:
+
+First_File_To_Run.R
+	This file contains code that will store data files and code files location into variables that will be used in remaining files to set the working directories.
+
+Load_Data.R
+	This file contains code that will load and sample the training data, split that dataset into training and validation datasets.(70%, 30%)
+
+ROCPlot.R
+	This file contains code for creating ROCPlots.
+
+Execution_Sequence.R
+	This file runs all the code till testing models and selecting one.
+
+Shrink_Categories_and_Factor.R
+	This file will shrink the number of categories to max categories allowed in one variable(max categories is 50 in our project)
+
+transform_time_variables.R
+	This file transforms the time varible 'hour' in our project. We have split it in is_week_day and hour of the day variable.
+
+Matching Levels.R
+	This file contains sample code for matching the levels in training and test data.
+
+Final_Load_Data.R
+	This file runs all the code for selected model to run on testdata and writes the probabilities and classes to csv files
+
+Lasso Regression.R
+	This file contains all the code for running lasso regression.
+
+transform_time_variables.R(Incomplete code)
+	We tried to use H2O framework for performance tuning but could not get it running.
+	
+
+1000000(random sample on training results)
+
+
 Full Data Results:
 
 rpart results:

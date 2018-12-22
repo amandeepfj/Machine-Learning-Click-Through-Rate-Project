@@ -13,8 +13,8 @@ if(!exists("testData.full.data")){
 }
 
 set.seed(4)
-#sampleSize <- nrow(trainingData.full.data)
-sampleSize <- 5000
+sampleSize <- nrow(trainingData.full.data)
+#sampleSize <- 5000
 if(sampleSize != nrow(trainingData.full.data)){
   trainingData <- trainingData.full.data[sample(1:nrow(trainingData.full.data), sampleSize, replace=FALSE),]
   testData <- testData.full.data[sample(1:nrow(testData.full.data), sampleSize, replace=FALSE),]
@@ -36,7 +36,7 @@ testData.final <- trainingData[(sampleSize + 1) : nrow(trainingData)]
 
 
 vars <- colnames(trainingData)
-cols_not_in_fm_right_side <- c("id", "click", "site_id", "site_domain", "app_id", "device_id", "device_ip")
+cols_not_in_fm_right_side <- c(not__to_factor)
 independent_variables <- setdiff(vars, cols_not_in_fm_right_side)
 BigFm <- paste("click","~",paste(independent_variables, collapse=" + "),sep=" ")
 BigFm <- formula(BigFm)
@@ -57,7 +57,7 @@ for(i in 1:length(independent_variables)){
 # Decision Trees ----------------
 if(!require("rpart")) { install.packages("rpart"); require("rpart") }
 
-rpc <- rpart.control(minsplit = 1, minbucket = 1, cp = 0, usesurrogate = 0, xval = 10)
+rpc <- rpart.control(minsplit = 1, minbucket = 1, cp = 0, usesurrogate = 0, xval = 5)
 dt <- rpart(BigFm, data = trainingData.final, control=rpc, method = "class")
 
 plotcp(dt)
@@ -69,3 +69,5 @@ pHatdt_class <- predict(out1, newdata = testData.final, type = "class")
 
 table(pHatdt_class)
 
+fwrite(pHatdt_preds, "pHatdt_preds.csv")
+fwrite(pHatdt_class, "pHatdt_class.csv")

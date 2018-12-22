@@ -14,7 +14,7 @@ if(!exists("testData.full.data")){
 
 set.seed(4)
 #sampleSize <- nrow(trainingData.full.data)
-sampleSize <- 1000
+sampleSize <- 5000
 if(sampleSize != nrow(trainingData.full.data)){
   trainingData <- trainingData.full.data[sample(1:nrow(trainingData.full.data), sampleSize, replace=FALSE),]
   testData <- testData.full.data[sample(1:nrow(testData.full.data), sampleSize, replace=FALSE),]
@@ -34,11 +34,25 @@ source("Shrink_Categories_and_Factor.R")
 trainingData.final <- trainingData[1: sampleSize]
 testData.final <- trainingData[(sampleSize + 1) : nrow(trainingData)]
 
+
 vars <- colnames(trainingData)
-cols_not_in_fm_right_side <- c("id", "click")
-BigFm <- paste("click","~",paste(setdiff(vars, cols_not_in_fm_right_side),collapse=" + "),sep=" ")
+cols_not_in_fm_right_side <- c("id", "click", "site_id", "site_domain", "app_id", "device_id", "device_ip")
+independent_variables <- setdiff(vars, cols_not_in_fm_right_side)
+BigFm <- paste("click","~",paste(independent_variables, collapse=" + "),sep=" ")
 BigFm <- formula(BigFm)
 print(BigFm)
+
+# Create factor list for each feature
+factor_list<-list()
+for(i in 1:length(independent_variables)){
+  factor_list[[i]]=unique(trainingData.final[[i]])
+}
+
+#match the levels
+for(i in 1:length(independent_variables)){
+  index<-which(!as.character(testData.final[[i]]) %in% as.character(factor_list[[i]]))
+  testData.final[[i]][index]<-NA
+}
 
 # Decision Trees ----------------
 if(!require("rpart")) { install.packages("rpart"); require("rpart") }
@@ -52,4 +66,6 @@ bestcp <- dt$cptable[which.min(dt$cptable[,"xerror"]),"CP"]
 out1 <- prune(dt, cp = bestcp)
 pHatdt_preds <- predict(out1, newdata = testData.final, type = "prob")
 pHatdt_class <- predict(out1, newdata = testData.final, type = "class")
+
+table(pHatdt_class)
 

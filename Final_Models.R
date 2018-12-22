@@ -7,7 +7,8 @@ source("Log Loss Function.R")
 
 vars <- colnames(trainingData)
 cols_not_in_fm_right_side <- c(not__to_factor)
-BigFm <- paste("click","~",paste(setdiff(vars, cols_not_in_fm_right_side),collapse=" + "),sep=" ")
+independent_variables <- setdiff(vars, cols_not_in_fm_right_side)
+BigFm <- paste("click","~",paste(independent_variables, collapse=" + "),sep=" ")
 BigFm <- formula(BigFm)
 print(BigFm)
 sapply(trainingData,class)
@@ -17,8 +18,8 @@ gc()
 # Decision Trees ----------------
 if(!require("rpart")) { install.packages("rpart"); require("rpart") }
 
-rpc <- rpart.control(minsplit = 1, minbucket = 1, cp = 0, usesurrogate = 0, xval = 10)
-dt <- rpart(BigFm, data = trainingData.splits$train, control=rpc, method = "class")
+rpc <- rpart.control(minsplit = 1, minbucket = 1, cp = 0, usesurrogate = 0, xval = 5)
+system.time(dt <- rpart(BigFm, data = trainingData.splits$train, method = "class"))
 
 plotcp(dt)
 
@@ -34,8 +35,8 @@ print(paste("Log Loss of DT =", logloss.dt))
 gc()
 # mtry defines bagging process, if it all variables then its bagging - Bagging -------------
 library(randomForest)
-bagging <- randomForest(BigFm, data = trainingData.splits$train, 
-                        mtry = (length(colnames(trainingData.splits$train)) - 4), ntree = 500)
+system.time(bagging <- randomForest(BigFm, data = trainingData.splits$train, 
+                        mtry = (length(colnames(trainingData.splits$train)) - 4), ntree = 500))
 
 pHatbagging <- predict(bagging,newdata = trainingData.splits$validate, type = "prob")
 pHatbagging <- pHatbagging[, 2]

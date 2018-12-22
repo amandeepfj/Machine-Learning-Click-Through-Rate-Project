@@ -11,7 +11,7 @@ if(!exists("trainingData.full.data")){
 
 set.seed(4)
 #sampleSize <- nrow(trainingData.full.data)
-sampleSize <- 1000000
+sampleSize <- 1000
 if(sampleSize != nrow(trainingData.full.data)){
   trainingData <- trainingData.full.data[sample(1:nrow(trainingData.full.data), sampleSize, replace=FALSE),]
   trainingData.summary <- summary(trainingData)

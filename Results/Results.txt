@@ -31,14 +31,13 @@ transform_time_variables.R(Incomplete code)
 	We tried to use H2O framework for performance tuning but could not get it running.
 	
 
-1000000(random sample on training results)
-
-
 Full Data Results:
 
 rpart results:
 
 > print(paste("Log Loss of DT =", logloss.dt))
 [1] "Log Loss of DT = 0.407170653668762"
+
+AUC = 0.726
 
 
